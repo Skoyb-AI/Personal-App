@@ -140,7 +140,8 @@
   }
   .header h1 { font-size: 16px; font-weight: 600; color: var(--text-primary); }
   .header p { font-size: 12px; color: var(--text-secondary); margin-top: 1px; }
-  .theme-toggle {
+  .header-actions { display: flex; gap: 8px; }
+  .theme-toggle, .clear-btn {
     width: 36px; height: 36px;
     border-radius: 50%;
     border: 1px solid var(--border);
@@ -150,7 +151,7 @@
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
   }
-  .theme-toggle:hover { background: var(--suggestion-bg); }
+  .theme-toggle:hover, .clear-btn:hover { background: var(--suggestion-bg); }
   .api-bar {
     padding: 12px 24px;
     background: var(--config-bg);
@@ -312,7 +313,10 @@
         <p>Powered by Claude · Calendar &amp; Search tools</p>
       </div>
     </div>
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark mode"></button>
+    <div class="header-actions">
+      <button class="clear-btn" id="clearBtn" onclick="clearConversation()" aria-label="Clear conversation">🗑️</button>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark mode"></button>
+    </div>
   </div>
 
   <div class="api-bar">
@@ -496,6 +500,19 @@ function handleKey(e) {
 function sendSuggestion(el) {
   document.getElementById("input").value = el.textContent;
   sendMessage();
+}
+
+function clearConversation() {
+  if (conversationHistory.length === 0) return;
+  if (!confirm("Clear the current conversation?")) return;
+
+  conversationHistory = [];
+  document.getElementById("messages").innerHTML = `
+    <div class="empty-state" id="emptyState">
+      <div class="icon">✦</div>
+      <strong>Your assistant is ready</strong>
+      <span>Enter your API key above, then try one of the prompts below or type your own.</span>
+    </div>`;
 }
 
 function addMessage(role, content) {
