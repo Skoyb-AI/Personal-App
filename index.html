@@ -48,11 +48,10 @@
     background: #fafaf8;
     border-bottom: 1px solid #eee;
     display: flex;
-    gap: 8px;
-    align-items: center;
+    flex-direction: column;
   }
   .api-bar label { font-size: 12px; color: #666; white-space: nowrap; }
-  .api-bar input {
+  .api-bar input, .api-bar textarea {
     flex: 1;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -62,7 +61,16 @@
     background: white;
     color: #333;
   }
-  .api-bar input:focus { outline: none; border-color: #534AB7; }
+  .api-bar textarea {
+    resize: vertical;
+    min-height: 32px;
+    max-height: 120px;
+    line-height: 1.4;
+  }
+  .api-bar input:focus, .api-bar textarea:focus { outline: none; border-color: #534AB7; }
+  .config-row { display: flex; gap: 8px; align-items: center; }
+  .config-row:not(:first-child) { margin-top: 8px; }
+  .config-row label { padding-top: 2px; }
   .messages {
     flex: 1;
     overflow-y: auto;
@@ -196,8 +204,14 @@
   </div>
 
   <div class="api-bar">
-    <label for="apiKey">API Key:</label>
-    <input type="password" id="apiKey" placeholder="sk-ant-..." />
+    <div class="config-row">
+      <label for="apiKey">API Key:</label>
+      <input type="password" id="apiKey" placeholder="sk-ant-..." />
+    </div>
+    <div class="config-row">
+      <label for="systemPrompt">System Prompt:</label>
+      <textarea id="systemPrompt" rows="2" placeholder="Customize how the assistant behaves..."></textarea>
+    </div>
   </div>
 
   <div class="messages" id="messages">
@@ -311,6 +325,19 @@ function executeTool(name, input) {
 
 let conversationHistory = [];
 
+const DEFAULT_SYSTEM_PROMPT = "You are a helpful personal assistant. You have access to the user's calendar and can search the web. Always use tools when the user asks about their schedule or wants information searched. Be concise and friendly.";
+
+function initSystemPrompt() {
+  const el = document.getElementById("systemPrompt");
+  let saved = null;
+  try { saved = localStorage.getItem("systemPrompt"); } catch (e) {}
+  el.value = saved || DEFAULT_SYSTEM_PROMPT;
+  el.addEventListener("input", () => {
+    try { localStorage.setItem("systemPrompt", el.value); } catch (e) {}
+  });
+}
+initSystemPrompt();
+
 function autoResize(el) {
   el.style.height = "auto";
   el.style.height = Math.min(el.scrollHeight, 120) + "px";
@@ -404,8 +431,10 @@ async function sendMessage() {
 
   const thinking = addThinking();
 
+  const systemPrompt = document.getElementById("systemPrompt").value.trim() || DEFAULT_SYSTEM_PROMPT;
+
   try {
-    let response = await callClaude(apiKey, conversationHistory);
+    let response = await callClaude(apiKey, conversationHistory, systemPrompt);
 
     while (response.stop_reason === "tool_use") {
       removeThinking();
@@ -433,7 +462,7 @@ async function sendMessage() {
 
       conversationHistory.push({ role: "user", content: toolResults });
       addThinking();
-      response = await callClaude(apiKey, conversationHistory);
+      response = await callClaude(apiKey, conversationHistory, systemPrompt);
     }
 
     removeThinking();
@@ -452,7 +481,7 @@ async function sendMessage() {
   document.getElementById("sendBtn").disabled = false;
 }
 
-async function callClaude(apiKey, messages) {
+async function callClaude(apiKey, messages, systemPrompt) {
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -464,7 +493,7 @@ async function callClaude(apiKey, messages) {
     body: JSON.stringify({
       model: "claude-sonnet-5",
       max_tokens: 1024,
-      system: "You are a helpful personal assistant. You have access to the user's calendar and can search the web. Always use tools when the user asks about their schedule or wants information searched. Be concise and friendly.",
+      system: systemPrompt || DEFAULT_SYSTEM_PROMPT,
       messages,
       tools: TOOLS
     })
