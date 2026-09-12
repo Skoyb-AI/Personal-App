@@ -5,10 +5,105 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Personal Assistant</title>
 <style>
+  :root {
+    --bg-page: #f5f5f0;
+    --bg-app: #ffffff;
+    --border: #eee;
+    --text-primary: #1a1a1a;
+    --text-secondary: #888;
+    --text-empty: #aaa;
+    --text-empty-strong: #555;
+    --accent: #534AB7;
+    --accent-hover: #3C3489;
+    --config-bg: #fafaf8;
+    --config-label: #666;
+    --field-bg: #ffffff;
+    --field-border: #ddd;
+    --field-text: #333;
+    --bubble-assistant-bg: #f0eff8;
+    --tool-call-bg: #fef9ec;
+    --tool-call-border: #f0d080;
+    --tool-call-text: #7a5800;
+    --tool-call-label: #b07a00;
+    --tool-result-bg: #edf7ed;
+    --tool-result-border: #a0d0a0;
+    --tool-result-text: #1a5c1a;
+    --tool-result-label: #2a7a2a;
+    --avatar-border: #c8c4f0;
+    --suggestion-bg: #f5f4ff;
+    --suggestion-border: #d0cdf0;
+    --suggestion-hover: #e8e6ff;
+    --disabled-bg: #bbb;
+    --shadow: rgba(0,0,0,0.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg-page: #17171b;
+      --bg-app: #202024;
+      --border: #34343b;
+      --text-primary: #eaeaea;
+      --text-secondary: #999;
+      --text-empty: #888;
+      --text-empty-strong: #bbb;
+      --accent: #7c72e6;
+      --accent-hover: #948bec;
+      --config-bg: #1b1b20;
+      --config-label: #999;
+      --field-bg: #2a2a31;
+      --field-border: #45454e;
+      --field-text: #eaeaea;
+      --bubble-assistant-bg: #2c2a3d;
+      --tool-call-bg: #332c15;
+      --tool-call-border: #6b5a20;
+      --tool-call-text: #e0c070;
+      --tool-call-label: #e0c070;
+      --tool-result-bg: #1c2f1f;
+      --tool-result-border: #3f6b45;
+      --tool-result-text: #a8dcae;
+      --tool-result-label: #a8dcae;
+      --avatar-border: #453f6e;
+      --suggestion-bg: #29273a;
+      --suggestion-border: #443f66;
+      --suggestion-hover: #35325082;
+      --disabled-bg: #4a4a52;
+      --shadow: rgba(0,0,0,0.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg-page: #17171b;
+    --bg-app: #202024;
+    --border: #34343b;
+    --text-primary: #eaeaea;
+    --text-secondary: #999;
+    --text-empty: #888;
+    --text-empty-strong: #bbb;
+    --accent: #7c72e6;
+    --accent-hover: #948bec;
+    --config-bg: #1b1b20;
+    --config-label: #999;
+    --field-bg: #2a2a31;
+    --field-border: #45454e;
+    --field-text: #eaeaea;
+    --bubble-assistant-bg: #2c2a3d;
+    --tool-call-bg: #332c15;
+    --tool-call-border: #6b5a20;
+    --tool-call-text: #e0c070;
+    --tool-call-label: #e0c070;
+    --tool-result-bg: #1c2f1f;
+    --tool-result-border: #3f6b45;
+    --tool-result-text: #a8dcae;
+    --tool-result-label: #a8dcae;
+    --avatar-border: #453f6e;
+    --suggestion-bg: #29273a;
+    --suggestion-border: #443f66;
+    --suggestion-hover: #353250;
+    --disabled-bg: #4a4a52;
+    --shadow: rgba(0,0,0,0.4);
+  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: system-ui, sans-serif;
-    background: #f5f5f0;
+    background: var(--bg-page);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,9 +111,9 @@
     padding: 20px;
   }
   .app {
-    background: white;
+    background: var(--bg-app);
     border-radius: 16px;
-    box-shadow: 0 2px 24px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 24px var(--shadow);
     width: 100%;
     max-width: 680px;
     display: flex;
@@ -29,37 +124,50 @@
   }
   .header {
     padding: 20px 24px 16px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
     gap: 12px;
   }
+  .header-info { flex: 1; display: flex; align-items: center; gap: 12px; }
   .avatar {
     width: 36px; height: 36px;
-    background: #534AB7;
+    background: var(--accent);
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     color: white; font-size: 16px; font-weight: 600;
+    flex-shrink: 0;
   }
-  .header h1 { font-size: 16px; font-weight: 600; color: #1a1a1a; }
-  .header p { font-size: 12px; color: #888; margin-top: 1px; }
+  .header h1 { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+  .header p { font-size: 12px; color: var(--text-secondary); margin-top: 1px; }
+  .theme-toggle {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--config-bg);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .theme-toggle:hover { background: var(--suggestion-bg); }
   .api-bar {
     padding: 12px 24px;
-    background: #fafaf8;
-    border-bottom: 1px solid #eee;
+    background: var(--config-bg);
+    border-bottom: 1px solid var(--border);
     display: flex;
     flex-direction: column;
   }
-  .api-bar label { font-size: 12px; color: #666; white-space: nowrap; }
+  .api-bar label { font-size: 12px; color: var(--config-label); white-space: nowrap; }
   .api-bar input, .api-bar textarea {
     flex: 1;
-    border: 1px solid #ddd;
+    border: 1px solid var(--field-border);
     border-radius: 8px;
     padding: 6px 10px;
     font-size: 12px;
     font-family: monospace;
-    background: white;
-    color: #333;
+    background: var(--field-bg);
+    color: var(--field-text);
   }
   .api-bar textarea {
     resize: vertical;
@@ -67,7 +175,7 @@
     max-height: 120px;
     line-height: 1.4;
   }
-  .api-bar input:focus, .api-bar textarea:focus { outline: none; border-color: #534AB7; }
+  .api-bar input:focus, .api-bar textarea:focus { outline: none; border-color: var(--accent); }
   .config-row { display: flex; gap: 8px; align-items: center; }
   .config-row:not(:first-child) { margin-top: 8px; }
   .config-row label { padding-top: 2px; }
@@ -87,35 +195,35 @@
     border-radius: 12px;
     font-size: 14px;
     line-height: 1.5;
-    color: #1a1a1a;
-    background: #f0eff8;
+    color: var(--text-primary);
+    background: var(--bubble-assistant-bg);
   }
-  .msg.user .bubble { background: #534AB7; color: white; border-radius: 12px 12px 2px 12px; }
-  .msg.assistant .bubble { background: #f0eff8; border-radius: 12px 12px 12px 2px; }
+  .msg.user .bubble { background: var(--accent); color: white; border-radius: 12px 12px 2px 12px; }
+  .msg.assistant .bubble { background: var(--bubble-assistant-bg); border-radius: 12px 12px 12px 2px; }
   .tool-call {
-    background: #fef9ec;
-    border: 1px solid #f0d080;
+    background: var(--tool-call-bg);
+    border: 1px solid var(--tool-call-border);
     border-radius: 10px;
     padding: 10px 14px;
     font-size: 12px;
     font-family: monospace;
-    color: #7a5800;
+    color: var(--tool-call-text);
     max-width: 90%;
     margin-left: 46px;
   }
-  .tool-call .label { font-weight: 600; margin-bottom: 4px; font-family: system-ui; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #b07a00; }
+  .tool-call .label { font-weight: 600; margin-bottom: 4px; font-family: system-ui; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--tool-call-label); }
   .tool-result {
-    background: #edf7ed;
-    border: 1px solid #a0d0a0;
+    background: var(--tool-result-bg);
+    border: 1px solid var(--tool-result-border);
     border-radius: 10px;
     padding: 10px 14px;
     font-size: 12px;
     font-family: monospace;
-    color: #1a5c1a;
+    color: var(--tool-result-text);
     max-width: 90%;
     margin-left: 46px;
   }
-  .tool-result .label { font-weight: 600; margin-bottom: 4px; font-family: system-ui; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #2a7a2a; }
+  .tool-result .label { font-weight: 600; margin-bottom: 4px; font-family: system-ui; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--tool-result-label); }
   .msg-avatar {
     width: 32px; height: 32px;
     border-radius: 50%;
@@ -123,19 +231,19 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 13px; font-weight: 600;
   }
-  .msg.assistant .msg-avatar { background: #f0eff8; color: #534AB7; border: 1.5px solid #c8c4f0; }
-  .msg.user .msg-avatar { background: #534AB7; color: white; }
-  .thinking { color: #999; font-style: italic; font-size: 13px; padding: 4px 0; }
+  .msg.assistant .msg-avatar { background: var(--bubble-assistant-bg); color: var(--accent); border: 1.5px solid var(--avatar-border); }
+  .msg.user .msg-avatar { background: var(--accent); color: white; }
+  .thinking { color: var(--text-secondary); font-style: italic; font-size: 13px; padding: 4px 0; }
   .input-bar {
     padding: 16px 24px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--border);
     display: flex;
     gap: 10px;
     align-items: flex-end;
   }
   textarea {
     flex: 1;
-    border: 1px solid #ddd;
+    border: 1px solid var(--field-border);
     border-radius: 12px;
     padding: 10px 14px;
     font-size: 14px;
@@ -143,11 +251,12 @@
     resize: none;
     max-height: 120px;
     line-height: 1.5;
-    color: #1a1a1a;
+    color: var(--text-primary);
+    background: var(--bg-app);
   }
-  textarea:focus { outline: none; border-color: #534AB7; }
+  textarea:focus { outline: none; border-color: var(--accent); }
   button.send {
-    background: #534AB7;
+    background: var(--accent);
     color: white;
     border: none;
     border-radius: 10px;
@@ -158,8 +267,8 @@
     white-space: nowrap;
     height: 42px;
   }
-  button.send:hover { background: #3C3489; }
-  button.send:disabled { background: #bbb; cursor: not-allowed; }
+  button.send:hover { background: var(--accent-hover); }
+  button.send:disabled { background: var(--disabled-bg); cursor: not-allowed; }
   .suggestions {
     padding: 0 24px 16px;
     display: flex;
@@ -167,16 +276,16 @@
     flex-wrap: wrap;
   }
   .suggestion {
-    background: #f5f4ff;
-    border: 1px solid #d0cdf0;
+    background: var(--suggestion-bg);
+    border: 1px solid var(--suggestion-border);
     border-radius: 20px;
     padding: 5px 12px;
     font-size: 12px;
-    color: #534AB7;
+    color: var(--accent);
     cursor: pointer;
     transition: background 0.15s;
   }
-  .suggestion:hover { background: #e8e6ff; }
+  .suggestion:hover { background: var(--suggestion-hover); }
   .empty-state {
     display: flex;
     flex-direction: column;
@@ -184,23 +293,26 @@
     justify-content: center;
     flex: 1;
     gap: 8px;
-    color: #aaa;
+    color: var(--text-empty);
     font-size: 14px;
     text-align: center;
     padding: 20px;
   }
   .empty-state .icon { font-size: 36px; margin-bottom: 4px; }
-  .empty-state strong { color: #555; font-size: 15px; }
+  .empty-state strong { color: var(--text-empty-strong); font-size: 15px; }
 </style>
 </head>
 <body>
 <div class="app">
   <div class="header">
-    <div class="avatar">A</div>
-    <div>
-      <h1>Personal Assistant</h1>
-      <p>Powered by Claude · Calendar &amp; Search tools</p>
+    <div class="header-info">
+      <div class="avatar">A</div>
+      <div>
+        <h1>Personal Assistant</h1>
+        <p>Powered by Claude · Calendar &amp; Search tools</p>
+      </div>
     </div>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark mode"></button>
   </div>
 
   <div class="api-bar">
@@ -236,6 +348,37 @@
 </div>
 
 <script>
+function currentEffectiveTheme() {
+  const attr = document.documentElement.getAttribute("data-theme");
+  if (attr) return attr;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function updateThemeToggleIcon() {
+  document.getElementById("themeToggle").textContent = currentEffectiveTheme() === "dark" ? "☀️" : "🌙";
+}
+
+function applyTheme(theme) {
+  if (theme === "dark" || theme === "light") {
+    document.documentElement.setAttribute("data-theme", theme);
+  } else {
+    document.documentElement.removeAttribute("data-theme");
+  }
+  updateThemeToggleIcon();
+}
+
+function toggleTheme() {
+  const next = currentEffectiveTheme() === "dark" ? "light" : "dark";
+  try { localStorage.setItem("theme", next); } catch (e) {}
+  applyTheme(next);
+}
+
+(function initTheme() {
+  let saved = null;
+  try { saved = localStorage.getItem("theme"); } catch (e) {}
+  applyTheme(saved === "dark" || saved === "light" ? saved : null);
+})();
+
 const TOOLS = [
   {
     name: "get_calendar_events",
